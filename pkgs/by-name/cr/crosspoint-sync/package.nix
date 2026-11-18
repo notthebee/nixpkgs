@@ -1,28 +1,30 @@
 {
   lib,
   buildNpmPackage,
-  fetchFromGitHub,
+  fetchzip,
+  ffmpeg,
   makeWrapper,
   nodejs_24,
   nixosTests,
-  nix-update-script,
 }:
 
 buildNpmPackage (finalAttrs: {
   pname = "crosspoint-sync";
-  version = "d35a853";
+  version = "0.2.1";
 
-  src = fetchFromGitHub {
-    owner = "crosspoint-reader";
-    repo = "crosspoint-sync";
-    rev = "d35a8531520eafa832574e8c860d1deedcb72e37";
-    hash = "sha256-iMDC2AGIGDowkL7RRSWFCSWEgekYxdPblq4Ve+36MME=";
+  # Fork build: adds word-level Audiobookshelf alignment on top of upstream.
+  src = fetchzip {
+    url = "https://git.notthebe.ee/notthebee/crosspoint-sync/archive/be0588bb7d6a7c75570581a58d1901179bf71a69.tar.gz";
+    hash = "sha256-wFZEc6Ei3iorx1SM0ibKxy57C+t7UvO5+pzaAtzhrxo=";
   };
 
-  npmDepsHash = "sha256-kn3etI5vqGfPs+tsIGpNYqWcVJ8je/zBaPiUJKbYQTg=";
+  npmDepsHash = "sha256-OyuY6YrLItbwuUTkI2ZrZZZS03DSxmRtO1KFiwLpYTo=";
 
   # Upstream requires node:sqlite, which is only stable from Node 24 on.
   nodejs = nodejs_24;
+
+  # ffmpeg splits audiobooks that exceed the hosted transcriber's upload cap.
+  buildInputs = [ ffmpeg ];
 
   nativeBuildInputs = [ makeWrapper ];
 
@@ -42,6 +44,7 @@ buildNpmPackage (finalAttrs: {
 
     makeWrapper ${lib.getExe nodejs_24} $out/bin/crosspoint-sync \
       --add-flags $out/lib/crosspoint-sync/dist/index.js \
+      --prefix PATH : ${lib.makeBinPath [ ffmpeg ]} \
       --set-default NODE_ENV production
 
     runHook postInstall
@@ -49,9 +52,6 @@ buildNpmPackage (finalAttrs: {
 
   passthru = {
     tests = { inherit (nixosTests) crosspoint-sync; };
-    updateScript = nix-update-script {
-      extraArgs = [ "--version=branch" ];
-    };
   };
 
   meta = {
