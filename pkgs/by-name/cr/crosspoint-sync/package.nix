@@ -14,8 +14,8 @@ buildNpmPackage (finalAttrs: {
 
   # Fork build: adds word-level Audiobookshelf alignment on top of upstream.
   src = fetchzip {
-    url = "https://git.notthebe.ee/notthebee/crosspoint-sync/archive/be0588bb7d6a7c75570581a58d1901179bf71a69.tar.gz";
-    hash = "sha256-wFZEc6Ei3iorx1SM0ibKxy57C+t7UvO5+pzaAtzhrxo=";
+    url = "https://git.notthebe.ee/notthebee/crosspoint-sync/archive/8da305907b8fa15ae97457d3591e2ce640398b12.tar.gz";
+    hash = "sha256-0jKXXOofZmKVTMB8+XY5wC/GfqWNb6m6GZLtTa/6rxg=";
   };
 
   npmDepsHash = "sha256-OyuY6YrLItbwuUTkI2ZrZZZS03DSxmRtO1KFiwLpYTo=";
